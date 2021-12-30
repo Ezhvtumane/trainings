@@ -4,13 +4,17 @@ import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
+        TryCatchFinally kek = new TryCatchFinally();
+        kek.kek();
+        /*
+
         OuterSort os = new OuterSort();
         os.init();
         int[] bigArray = {6, 5, 8, 4, 9, 2, 3, 1, 7, 0, 11, 34};//new int[10];//
-        /*Random random = new Random();
+        *//*Random random = new Random();
         for (int i = 0; i < bigArray.length; i++) {
             bigArray[i] = random.nextInt();
-        }*/
+        }*//*
         int[] kek = os.sort(bigArray);
         for (int k : kek) {
             System.out.print(k + ", ");
@@ -72,7 +76,7 @@ public class Main {
         for (int ka : result) {
             System.out.print(ka + ", ");
         }
-
+*/
 
     }
 
