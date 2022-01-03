@@ -37,7 +37,6 @@ public class AddTwoNumbers {
         /*
          * [9,9,9,9,9,9,9]
          * [9,9,9,9]
-         * 
          */
         int buff = 0;
         ListNode buffer = null;
@@ -69,7 +68,7 @@ public class AddTwoNumbers {
             l1 = next1;
             l2 = next2;
         } while (buff > 0 || l1 != null || l2 != null);
-
+        
         return reverse(buffer);
     }
 
