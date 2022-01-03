@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class LongestSubstringWithoutRepeatingCharacters {
     /*
-     * Input: s = "pwwkew","dvdf", "anviaj", "abcabcbb"
+     * Input: s = "pwwkew","dvdf", "anviaj", "abcabcbb","aab"
      * Output: 3
      * Explanation: The answer is "wke", with the length of 3.
      * Notice that the answer must be a substring, "pwke" is a subsequence and not a
@@ -15,7 +15,7 @@ public class LongestSubstringWithoutRepeatingCharacters {
      */
     public static void main(String[] args) {
         LongestSubstringWithoutRepeatingCharacters l = new LongestSubstringWithoutRepeatingCharacters();
-        String s = "anviaj"; 
+        String s = "aab"; 
         //5 потому что вторая подстрока - то есть надо возвращаться не на предыдущие ближайшие значения, 
         //а на позицию после начала текущей подстроки!!
         int i = l.lengthOfLongestSubstring(s);
@@ -40,13 +40,8 @@ public class LongestSubstringWithoutRepeatingCharacters {
                 if (globalCounter < c) {
                     globalCounter = c;
                 }
+                i -= alreadyBeenChar.size();
                 alreadyBeenChar.clear();
-                if (kek[i] == (kek[i-1])) {   //ArrayOutOfBound? 
-                    i--;    
-                } else {
-                    i--;
-                    i--;
-                }
                 c = 0;
                 System.out.println("gCount=" + globalCounter + ", i=" + i);
                 continue;
