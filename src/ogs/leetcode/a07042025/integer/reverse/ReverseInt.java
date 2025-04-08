@@ -1,4 +1,4 @@
-package ogs.leetcode.reverseinteger;
+package ogs.leetcode.a07042025.integer.reverse;
 
 public class ReverseInt {
 
