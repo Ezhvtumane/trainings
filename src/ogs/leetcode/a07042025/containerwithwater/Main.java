@@ -4,13 +4,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.Queue;
+import java.util.concurrent.*;
 
 public class Main {
     /*
@@ -41,24 +40,43 @@ public class Main {
         System.out.println(e.toEpochMilli() - s.toEpochMilli());
     }
 
+    public static int maxArea(int[] height) {
+        int startPointer = 0;
+        int endPointer = height.length-1;
+        int res = 0;
+
+        while (startPointer < endPointer) {
+            int l = endPointer - startPointer;
+            int h = Math.min(height[startPointer], height[endPointer]);
+            res = Math.max(res, h * l);
+            if (height[startPointer] > height[endPointer]) {
+                endPointer--;
+            } else {
+                startPointer++;
+            }
+        }
+        return res;
+    }
+
     public record Point(
             int startIndex,
             int endIndex
     ) {
     }
+
     //fun multy-pulty
-    public static int maxArea(int[] height) {
+    public static int maxAreaFun(int[] height) {
         List<Point> p = new ArrayList<>();
-        int divider = height.length / (height.length < 10 ? 2 : height.length / 10);
+        int divider = 1800; //height.length / 200;
         if (divider == 1 || divider == 0) {
             divider = 2;
         }
         int startIndex = 0;
-        int endIndex = divider;
+        int endIndex = Math.min(divider, height.length);
         do {
             p.add(new Point(startIndex, endIndex));
             startIndex = endIndex;
-            endIndex = endIndex * 2;
+            endIndex = endIndex + divider;
             if (endIndex > height.length) {
                 endIndex = height.length;
                 p.add(new Point(startIndex, endIndex));
@@ -66,15 +84,19 @@ public class Main {
             }
         } while (endIndex < height.length);
         System.out.println("p: " + p.size());
-        final List<Future<Integer>> futures = new ArrayList<>();
+        final Queue<Future<Integer>> futures = new ConcurrentLinkedQueue<>();
         int res = 0;
-        try (ExecutorService ex = Executors.newFixedThreadPool((p.size() / 2) == 0 ? 1 : (p.size() / 2))) {
+        try (ExecutorService ex = Executors.newFixedThreadPool(10)) {
             for (Point point : p) {
                 futures.add(ex.submit(() -> maxAreaBy(height, point.startIndex(), point.endIndex())));
             }
-            for (Future<Integer> f : futures) {
-                int r = f.get();
-                res = Math.max(res, r);
+
+            while (!futures.isEmpty()) {
+                for (Future<Integer> f : futures)
+                    if (f.isDone()) {
+                        res = Math.max(res, f.get());
+                        futures.remove(f);
+                    }
             }
         } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);
@@ -83,6 +105,7 @@ public class Main {
     }
 
     public static int maxAreaBy(int[] height, int startIndex, int endIndex) {
+        Instant start = Instant.now();
         int res = 0;
         for (int i = startIndex; i < endIndex; i++) {
             for (int j = startIndex + 1; j < height.length; j++) {
@@ -92,13 +115,14 @@ public class Main {
                 res = Math.max(res, Math.min(height[i], height[j]) * (j - i));
             }
         }
+        System.out.println("count: " + (endIndex - startIndex) + ", time sec: " + (Instant.now().toEpochMilli() - start.toEpochMilli()) + "! thread:" + Thread.currentThread().getName() + ". end time: " + Instant.now().atZone(ZoneId.of("UTC")));
         return res;
     }
 
     public static int maxAreaByTwo(int[] height) {
         Instant startT = Instant.now();
 
-        try (ExecutorService ex = Executors.newFixedThreadPool(2)) {
+        try (ExecutorService ex = Executors.newFixedThreadPool(4)) {
             Future<Integer> submitOne = ex.submit(() -> maxArea1(height, 3));
             Future<Integer> submitTwo = ex.submit(() -> maxArea2(height, 3));
 
