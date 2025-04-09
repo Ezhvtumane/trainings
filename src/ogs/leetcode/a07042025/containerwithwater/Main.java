@@ -35,24 +35,23 @@ public class Main {
 
         //System.out.println(maxAreaByTwo(arr));
         Instant s = Instant.now();
-        System.out.println(maxArea(arr));
+        System.out.println(maxArea(z));
         Instant e = Instant.now();
         System.out.println(e.toEpochMilli() - s.toEpochMilli());
     }
 
     public static int maxArea(int[] height) {
         int startPointer = 0;
-        int endPointer = height.length-1;
+        int endPointer = height.length - 1;
         int res = 0;
 
-        while (startPointer < endPointer) {
-            int l = endPointer - startPointer;
-            int h = Math.min(height[startPointer], height[endPointer]);
-            res = Math.max(res, h * l);
-            if (height[startPointer] > height[endPointer]) {
-                endPointer--;
-            } else {
+        while (startPointer <= endPointer) {
+            if (height[startPointer] <= height[endPointer]) {
+                res = Math.max(res, height[startPointer] * (endPointer - startPointer));
                 startPointer++;
+            } else {
+                res = Math.max(res, height[endPointer] * (endPointer - startPointer));
+                endPointer--;
             }
         }
         return res;
