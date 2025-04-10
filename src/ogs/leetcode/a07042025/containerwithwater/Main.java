@@ -32,26 +32,46 @@ public class Main {
             arr[i] = k.get(i);
         }
         int[] z = new int[]{1, 8, 6, 2, 5, 4, 8, 3, 7};
+        int[] x = new int[]{1,2,4,3};
 
         //System.out.println(maxAreaByTwo(arr));
         Instant s = Instant.now();
-        System.out.println(maxArea(z));
+        System.out.println(maxArea(x));
         Instant e = Instant.now();
         System.out.println(e.toEpochMilli() - s.toEpochMilli());
+        Object o = new Object();
+        o.wait();
     }
 
     public static int maxArea(int[] height) {
         int startPointer = 0;
         int endPointer = height.length - 1;
-        int res = 0;
-
+        int res = Math.min(height[startPointer], height[endPointer]) * (endPointer - startPointer);
+        boolean flag = true;
         while (startPointer <= endPointer) {
-            if (height[startPointer] <= height[endPointer]) {
-                res = Math.max(res, height[startPointer] * (endPointer - startPointer));
-                startPointer++;
+            //добавить указатель предыдущей меньшей,
+            // если сторона которая меньшая не изменилась,
+            // то и считать нет смысла
+            if (flag) {
+                if (height[startPointer] <= height[endPointer]) {
+                    System.out.println("true true, "+ res);
+                    startPointer++;
+                } else {
+                    res = Math.max(res, height[endPointer] * (endPointer - startPointer));
+                    endPointer--;
+                    flag = false;
+                    System.out.println("true false, "+ res);
+                }
             } else {
-                res = Math.max(res, height[endPointer] * (endPointer - startPointer));
-                endPointer--;
+                if (height[startPointer] <= height[endPointer]) {
+                    res = Math.max(res, height[startPointer] * (endPointer - startPointer));
+                    startPointer++;
+                    flag = true;
+                    System.out.println("false true, "+ res);
+                } else {
+                    endPointer--;
+                    System.out.println("false false, "+ res);
+                }
             }
         }
         return res;
